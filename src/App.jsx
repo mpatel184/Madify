@@ -1,7 +1,7 @@
 import { useState } from "react";
 import HomePage from "./Components/HomePage";
 import Header from "./Components/Header";
-import Footer from "./Components/footer";
+import Footer from "./Components/Footer";
 import Results from "./Components/Result";
 import Booking from "./Components/Booking";
 import MyBookings from "./Components/MyBooking";
