@@ -12,7 +12,7 @@ const Booking = () => {
   const [availableDates, setAvailableDates] = useState([]);
 
   useEffect(() => {
-    // Get selected center from sessionStorage
+  
     const storedCenter = sessionStorage.getItem('selectedCenter');
     
     if (!storedCenter) {
@@ -24,8 +24,6 @@ const Booking = () => {
     try {
       const centerData = JSON.parse(storedCenter);
       setCenter(centerData);
-      
-      // Generate available dates (next 7 days)
       const dates = [];
       const today = new Date();
       
@@ -79,11 +77,9 @@ const Booking = () => {
       status: "Confirmed"
     };
     
-    // Save to localStorage
     const existingBookings = JSON.parse(localStorage.getItem('bookings')) || [];
     localStorage.setItem('bookings', JSON.stringify([...existingBookings, booking]));
     
-    // Navigate to bookings page
     alert(`Booking confirmed at ${center["Hospital Name"]} for ${selectedTime} on ${selectedDate}`);
     navigate("/my-bookings");
   };
@@ -126,7 +122,7 @@ const Booking = () => {
           <h2 className="text-2xl font-bold mb-6">Book an Appointment</h2>
           
           <div className="flex flex-col md:flex-row gap-6">
-            {/* Center Information */}
+           
             <div className="md:w-1/3">
               <div className="bg-blue-50 rounded-lg p-6">
                 <div className="flex items-start mb-4">
@@ -203,11 +199,9 @@ const Booking = () => {
               </div>
             </div>
             
-            {/* Booking Form */}
             <div className="md:w-2/3">
               <h4 className="font-medium text-gray-800 mb-4">Select Appointment Date & Time</h4>
               
-              {/* Calendar Section */}
               <div className="mb-6">
                 <p className="text-gray-600 mb-3">Available Dates (Next 7 Days)</p>
                 <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-7 gap-2">
@@ -231,7 +225,6 @@ const Booking = () => {
                 </div>
               </div>
               
-              {/* Time Slots Section */}
               <div className="mb-6">
                 <p className="text-gray-600 mb-3">Available Time Slots</p>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -255,7 +248,6 @@ const Booking = () => {
                 </div>
               </div>
               
-              {/* Booking Summary */}
               <div className="bg-gray-50 p-4 rounded-md mb-6">
                 <h5 className="font-medium text-gray-800 mb-2">Booking Summary</h5>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
@@ -303,7 +295,6 @@ const Booking = () => {
           </div>
         </div>
         
-        {/* App Download Section */}
         <div className="bg-white rounded-lg shadow-md p-6">
           <div className="flex flex-col md:flex-row items-center">
             <div className="md:w-2/3 mb-6 md:mb-0">

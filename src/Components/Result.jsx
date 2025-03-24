@@ -11,7 +11,6 @@ const Results = () => {
   const [selectedCity, setSelectedCity] = useState("");
 
   useEffect(() => {
-    // Get search parameters from sessionStorage
     const state = sessionStorage.getItem("searchState");
     const city = sessionStorage.getItem("searchCity");
 
@@ -22,8 +21,6 @@ const Results = () => {
 
     setSelectedState(state);
     setSelectedCity(city || "");
-
-    // Fetch search results
     fetchResults(state, city);
   }, [navigate]);
 
@@ -47,16 +44,11 @@ const Results = () => {
   };
 
   const handleBooking = (center) => {
-    // Store selected center in sessionStorage
     sessionStorage.setItem("selectedCenter", JSON.stringify(center));
-
-    // Navigate to booking page
     navigate(`/book/${center["Provider ID"] || Date.now()}`);
   };
 
-  // MedicalCenterCard component
   const MedicalCenterCard = ({ result }) => {
-    // Calculate star display based on hospital rating
     const hospitalRating = result["Hospital overall rating"] || 3;
     const stars = [];
     for (let i = 0; i < 5; i++) {
