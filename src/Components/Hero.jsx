@@ -2,11 +2,11 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import doctorImage from "../assets/doctor.png";
-import doctor from "../assets/doc.png";
 import Hospital from "../assets/Hospital.png";
 import Ambulance from "../assets/Ambulance.png";
 import ae from "../assets/ae.png";
 import Cap from "../assets/Capsule.png";
+import doc from "../assets/doc.png";
 
 const Hero = () => {
   const navigate = useNavigate();
@@ -15,17 +15,17 @@ const Hero = () => {
   const [selectedState, setSelectedState] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null); // New error state
 
   useEffect(() => {
     const fetchStates = async () => {
+      setIsLoading(true);
       try {
-        setIsLoading(true);
-        const res = await axios.get(
-          "https://meddata-backend.onrender.com/states"
-        );
+        const res = await axios.get("https://meddata-backend.onrender.com/states");
         setStates(res.data);
       } catch (error) {
         console.error("Error fetching states:", error);
+        setError("Failed to load states."); // Set error state
       } finally {
         setIsLoading(false);
       }
@@ -46,14 +46,13 @@ const Hero = () => {
   };
 
   const fetchCities = async (state) => {
+    setIsLoading(true);
     try {
-      setIsLoading(true);
-      const res = await axios.get(
-        `https://meddata-backend.onrender.com/cities/${state}`
-      );
+      const res = await axios.get(`https://meddata-backend.onrender.com/cities/${state}`);
       setCities(res.data);
     } catch (error) {
       console.error("Error fetching cities:", error);
+      setError("Failed to load cities."); // Set error state
     } finally {
       setIsLoading(false);
     }
@@ -64,13 +63,13 @@ const Hero = () => {
   };
 
   const handleSearch = () => {
-    if (!selectedState) {
-      alert("Please select a state");
+    if (!selectedState || !selectedCity) {
+      alert("Please select both a state and a city.");
       return;
     }
 
     sessionStorage.setItem("searchState", selectedState);
-    sessionStorage.setItem("searchCity", selectedCity || "");
+    sessionStorage.setItem("searchCity", selectedCity);
     navigate("/results");
   };
 
@@ -114,6 +113,7 @@ const Hero = () => {
             id="search-section"
             className="bg-white rounded-lg shadow-md p-6 mb-12"
           >
+            {error && <p className="text-red-500">{error}</p>} {/* Display error message */}
             <div className="flex flex-col md:flex-row gap-3 mb-4">
               <div className="flex-1 relative" id="state">
                 <span className="absolute inset-y-0 left-3 flex items-center">
@@ -187,13 +187,10 @@ const Hero = () => {
                 type="submit"
                 className="bg-blue-500 text-white rounded-md px-6 py-3 hover:bg-blue-600 transition-colors flex items-center justify-center"
                 onClick={handleSearch}
-                disabled={isLoading || !selectedState}
+                disabled={isLoading || !selectedState || !selectedCity}
               >
                 {isLoading ? (
-                  <svg
-                    className="animate-spin h-5 w-5 mr-1"
-                    viewBox="0 0 24 24"
-                  >
+                  <svg className="animate-spin h-5 w-5 mr-1" viewBox="0 0 24 24">
                     <circle
                       className="opacity-25"
                       cx="12"
@@ -235,7 +232,7 @@ const Hero = () => {
               </p>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
                 {[
-                  { name: "Doctors", image: doctor },
+                  { name: "Doctors", image: doc },
                   { name: "Hospitals", image: Hospital },
                   { name: "Labs", image: ae },
                   { name: "Medical Store", image: Cap },
@@ -245,11 +242,7 @@ const Hero = () => {
                     key={item.name}
                     className="flex flex-col items-center p-4 rounded-md hover:bg-blue-50 transition-colors cursor-pointer border border-gray-100"
                   >
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-12 h-12 bg-blue-100 rounded-full mb-2"
-                    />
+                    <img src={item.image} alt={item.name} className="w-12 h-12 bg-blue-100 rounded-full mb-2" />
                     <span className="text-blue-500 text-sm font-medium">
                       {item.name}
                     </span>
