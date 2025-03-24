@@ -233,8 +233,8 @@ const Hero = () => {
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
                 {[
                   { name: "Doctors", image: doc },
-                  { name: "Hospitals", image: Hospital },
                   { name: "Labs", image: ae },
+                  { name: "Hospitals", image: Hospital },
                   { name: "Medical Store", image: Cap },
                   { name: "Ambulance", image: Ambulance },
                 ].map((item) => (
