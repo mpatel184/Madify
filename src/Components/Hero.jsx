@@ -113,9 +113,9 @@ const Hero = () => {
             id="search-section"
             className="bg-white rounded-lg shadow-md p-6 mb-12"
           >
-            {error && <p className="text-red-500">{error}</p>} {/* Display error message */}
-            <div className="flex flex-col md:flex-row gap-3 mb-4">
-              <div className="flex-1 relative" id="state">
+            {error && <p className="text-red-500">{error}</p>}
+            <div className="flex flex-col md:flex-row gap-3 mb-4" id="state">
+              <div className="flex-1 relative">
                 <span className="absolute inset-y-0 left-3 flex items-center">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
