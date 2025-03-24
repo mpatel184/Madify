@@ -15,7 +15,7 @@ const Hero = () => {
   const [selectedState, setSelectedState] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null); // New error state
+  const [error, setError] = useState(null); 
 
   useEffect(() => {
     const fetchStates = async () => {
@@ -25,7 +25,7 @@ const Hero = () => {
         setStates(res.data);
       } catch (error) {
         console.error("Error fetching states:", error);
-        setError("Failed to load states."); // Set error state
+        setError("Failed to load states."); 
       } finally {
         setIsLoading(false);
       }
@@ -52,7 +52,7 @@ const Hero = () => {
       setCities(res.data);
     } catch (error) {
       console.error("Error fetching cities:", error);
-      setError("Failed to load cities."); // Set error state
+      setError("Failed to load cities.");
     } finally {
       setIsLoading(false);
     }
@@ -114,8 +114,8 @@ const Hero = () => {
             className="bg-white rounded-lg shadow-md p-6 mb-12"
           >
             {error && <p className="text-red-500">{error}</p>}
-            <div className="flex flex-col md:flex-row gap-3 mb-4" id="state">
-              <div className="flex-1 relative">
+            <div className="flex flex-col md:flex-row gap-3 mb-4">
+              <div className="flex-1 relative" id="state">
                 <span className="absolute inset-y-0 left-3 flex items-center">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
