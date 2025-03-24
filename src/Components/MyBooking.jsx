@@ -1,95 +1,180 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const MyBookings = () => {
+  const navigate = useNavigate();
   const [bookings, setBookings] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
-    const storedBookings = JSON.parse(localStorage.getItem("bookings")) || [];
-    setBookings(storedBookings);
-    setIsLoading(false);
+    // Load bookings from localStorage
+    setIsLoading(true);
+    try {
+      const storedBookings = JSON.parse(localStorage.getItem('bookings')) || [];
+      setBookings(storedBookings);
+    } catch (error) {
+      console.error("Error loading bookings:", error);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
-  const cancelBooking = (id) => {
-    const updatedBookings = bookings.map((booking) =>
-      booking.id === id ? { ...booking, status: "Cancelled" } : booking
-    );
-    localStorage.setItem("bookings", JSON.stringify(updatedBookings));
+  const handleCancelBooking = (id) => {
+    const updatedBookings = bookings.filter(booking => booking.id !== id);
+    localStorage.setItem('bookings', JSON.stringify(updatedBookings));
     setBookings(updatedBookings);
+    alert("Booking cancelled successfully");
   };
 
-  const rescheduleBooking = (id) => {
-    const timeOptions = ["Morning", "Afternoon", "Evening"];
-    const currentBooking = bookings.find((booking) => booking.id === id);
-    let newTime;
-    do {
-      newTime = timeOptions[Math.floor(Math.random() * timeOptions.length)];
-    } while (newTime === currentBooking.timeOfDay);
-    const updatedBookings = bookings.map((booking) =>
-      booking.id === id ? { ...booking, timeOfDay: newTime, status: "Rescheduled" } : booking
-    );
-    localStorage.setItem("bookings", JSON.stringify(updatedBookings));
-    setBookings(updatedBookings);
-    alert(`Appointment rescheduled to ${newTime}`);
+  const formatDate = (dateString) => {
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString('en-US', options);
   };
+
+  const filteredBookings = searchQuery 
+    ? bookings.filter(booking => 
+        booking.center.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        booking.center.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        booking.timeOfDay.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : bookings;
+
+  if (isLoading) {
+    return (
+      <div className="bg-blue-50 min-h-screen pt-[120px]">
+        <div className="container mx-auto px-4 py-8 flex justify-center">
+          <svg className="animate-spin h-12 w-12 text-blue-500" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="bg-blue-50 min-h-screen pt-24 px-4 md:px-8">
-      <div className="max-w-6xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6">My Bookings</h1>
-        {isLoading ? (
-          <div className="flex justify-center items-center py-16">
-            <svg className="animate-spin h-12 w-12 text-blue-500" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-          </div>
-        ) : bookings.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {bookings.map((booking) => (
-              <div key={booking.id} className="bg-white rounded-lg shadow-md p-6">
-                <h3 className="text-xl font-semibold text-blue-500">{booking.center.name}</h3>
-                <p className="text-gray-600">{booking.center.description}</p>
-                <p className="text-gray-600 mt-2">{booking.center.location}</p>
-                <div className="mt-4 border-t pt-4">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <p className="text-gray-700">Date: <span className="font-semibold">{booking.date}</span></p>
-                      <p className="text-gray-700">Time: <span className="font-semibold">{booking.timeOfDay}</span></p>
-                    </div>
-                    <div className={`px-3 py-1 rounded-full text-sm font-medium ${
-                      booking.status === "Confirmed" 
-                        ? "bg-green-100 text-green-800" 
-                        : booking.status === "Cancelled"
-                          ? "bg-red-100 text-red-800"
-                          : "bg-yellow-100 text-yellow-800"
-                    }`}>
-                      {booking.status}
-                    </div>
-                  </div>
-                </div>
-                {booking.status !== "Cancelled" && (
-                  <div className="mt-4 flex space-x-3">
-                    <button onClick={() => rescheduleBooking(booking.id)}
-                      className="bg-blue-100 text-blue-600 px-4 py-2 rounded-md text-sm hover:bg-blue-200 transition-colors flex-1">
-                      Reschedule
-                    </button>
-                    <button onClick={() => cancelBooking(booking.id)}
-                      className="bg-red-100 text-red-600 px-4 py-2 rounded-md text-sm hover:bg-red-200 transition-colors flex-1">
-                      Cancel
-                    </button>
-                  </div>
-                )}
+    <div className="bg-blue-50 min-h-screen">
+      <div className="container mx-auto px-4 py-8 pt-[120px]">
+        <div className="bg-white p-4 rounded-lg shadow-md mb-6">
+          <div className="flex justify-between items-center mb-4">
+            <h1 className="text-2xl font-bold">My Bookings</h1>
+            <div className="relative w-64">
+              <input 
+                type="text" 
+                placeholder="Search bookings..." 
+                className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
+                </svg>
               </div>
-            ))}
+            </div>
+          </div>
+        </div>
+        
+        {filteredBookings.length === 0 ? (
+          <div className="bg-white rounded-md shadow-md p-8 text-center">
+            {searchQuery ? (
+              <>
+                <p className="text-lg text-gray-700">No bookings match your search.</p>
+                <button 
+                  onClick={() => setSearchQuery("")}
+                  className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
+                >
+                  Clear Search
+                </button>
+              </>
+            ) : (
+              <>
+                <p className="text-lg text-gray-700">You don't have any bookings yet.</p>
+                <button 
+                  onClick={() => navigate('/')}
+                  className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
+                >
+                  Find Medical Centers
+                </button>
+              </>
+            )}
           </div>
         ) : (
-          <div className="bg-white rounded-lg shadow-md p-8 text-center">
-            <p className="text-gray-700 text-lg mb-4">You don't have any bookings yet.</p>
-            <Link to="/" className="inline-block bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 transition-colors">
-              Find Medical Centers
-            </Link>
+          <div className="space-y-4">
+            {filteredBookings.map((booking) => (
+              <div key={booking.id} className="bg-white rounded-md shadow-md p-6">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
+                  <div className="flex items-start">
+                    <div className="bg-blue-100 rounded-full p-4 w-16 h-16 flex items-center justify-center mr-4">
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        className="h-8 w-8 text-blue-500" 
+                        viewBox="0 0 20 20" 
+                        fill="currentColor"
+                      >
+                        <path 
+                          fillRule="evenodd" 
+                          d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 0v12h8V4H6z" 
+                          clipRule="evenodd" 
+                        />
+                      </svg>
+                    </div>
+                    <div>
+                      <h3 className="text-blue-600 font-semibold text-lg">{booking.center.name}</h3>
+                      <p className="text-gray-600 text-sm">
+                        {booking.center.location}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="mt-2 md:mt-0 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
+                    {booking.status}
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                  <div className="bg-gray-50 p-3 rounded-md">
+                    <p className="text-gray-500 text-xs mb-1">Date</p>
+                    <p className="text-gray-800 font-medium">{formatDate(booking.date)}</p>
+                  </div>
+                  
+                  <div className="bg-gray-50 p-3 rounded-md">
+                    <p className="text-gray-500 text-xs mb-1">Time</p>
+                    <p className="text-gray-800 font-medium">{booking.timeOfDay}</p>
+                  </div>
+                  
+                  <div className="bg-gray-50 p-3 rounded-md">
+                    <p className="text-gray-500 text-xs mb-1">Booking ID</p>
+                    <p className="text-gray-800 font-medium">#{booking.id.toString().slice(-6)}</p>
+                  </div>
+                </div>
+                
+                <div className="border-t border-gray-200 mt-4 pt-4 flex justify-end">
+                  <button 
+                    className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded mr-2 transition-colors"
+                    onClick={() => handleCancelBooking(booking.id)}
+                  >
+                    Cancel Booking
+                  </button>
+                  <button 
+                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition-colors"
+                    onClick={() => {
+                      sessionStorage.setItem('selectedCenter', JSON.stringify({
+                        "Hospital Name": booking.center.name,
+                        "City": booking.center.location.split(', ')[0],
+                        "State": booking.center.location.split(', ')[1],
+                        "Address": booking.center.address,
+                        "Phone Number": booking.center.phone,
+                        "Hospital Type": booking.center.type
+                      }));
+                      navigate(`/book/${booking.id}`);
+                    }}
+                  >
+                    Change Date
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </div>
