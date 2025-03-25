@@ -159,11 +159,20 @@ const MyBookings = () => {
                       </svg>
                     </div>
                     <div>
-                      <h3 className="font-semibold text-blue-900 text-lg">
-                        {booking.center?.name ||
-                          booking["Hospital Name"].toLowerCase() ||
-                          "Unknown Hospital"}
-                      </h3>
+                      {bookings.length > 0 ? (
+                        bookings.map((booking, index) => (
+                          <h3
+                            key={index}
+                            className="font-semibold text-blue-900 text-lg"
+                          >
+                            {booking.center?.name ||
+                              booking["Hospital Name"]?.toLowerCase() ||
+                              "Unknown Hospital"}
+                          </h3>
+                        ))
+                      ) : (
+                        <p>No bookings found.</p>
+                      )}
                       <p className="text-gray-600 text-sm">
                         {booking.center?.location ||
                           `${booking["City"]}, ${booking["State"]}`}
