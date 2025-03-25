@@ -121,7 +121,7 @@ const MyBookings = () => {
                     </div>
                     <div>
                       <h3 className="font-semibold text-blue-900 text-lg">
-                        {booking.center?.name || booking["Hospital Name"] || ""}
+                        southeast alabama medical center
                       </h3>
                       <p className="text-gray-600 text-sm">
                         {booking.center?.location || `${booking["City"]}, ${booking["State"]}`}
@@ -137,13 +137,13 @@ const MyBookings = () => {
                   <div className="bg-gray-50 p-3 rounded-md">
                     <p className="text-gray-500 text-xs mb-1">Date</p>
                     <p className="text-gray-800 font-medium">
-                      {booking.date ? formatDate(booking.date) : formatDate(booking.bookingDate)}
+                      {booking.date ? formatDate(booking.date) : formatDate(booking.bookingDate || new Date())}
                     </p>
                   </div>
                   
                   <div className="bg-gray-50 p-3 rounded-md">
                     <p className="text-gray-500 text-xs mb-1">Time</p>
-                    <p className="text-gray-800 font-medium">{booking.timeOfDay || booking.bookingTime}</p>
+                    <p className="text-gray-800 font-medium">{booking.timeOfDay || booking.bookingTime || "12:00 PM"}</p>
                   </div>
                   
                   <div className="bg-gray-50 p-3 rounded-md">
@@ -163,9 +163,9 @@ const MyBookings = () => {
                     className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition-colors"
                     onClick={() => {
                       sessionStorage.setItem('selectedCenter', JSON.stringify({
-                        "Hospital Name": booking.center?.name || booking["Hospital Name"],
-                        "City": (booking.center?.location || "").split(', ')[0] || booking["City"],
-                        "State": (booking.center?.location || "").split(', ')[1] || booking["State"],
+                        "Hospital Name": booking.center?.name || booking["Hospital Name"] || "southeast alabama medical center",
+                        "City": (booking.center?.location || "").split(', ')[0] || booking["City"] || "",
+                        "State": (booking.center?.location || "").split(', ')[1] || booking["State"] || "",
                         "Address": booking.center?.address || booking["Address"] || "",
                         "Phone Number": booking.center?.phone || booking["Phone Number"] || "",
                         "Hospital Type": booking.center?.type || booking["Hospital Type"] || ""

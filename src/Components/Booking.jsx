@@ -66,14 +66,12 @@ const Booking = () => {
     
     const booking = {
       id: Date.now(),
-      center: {
-        name: center["Hospital Name"],
-        location: `${center["City"]}, ${center["State"]}`,
-        address: center["Address"],
-        phone: center["Phone Number"],
-        type: center["Hospital Type"],
-        rating: center["Hospital overall rating"]
-      },
+      "Hospital Name": "southeast alabama medical center",
+      "City": center["City"] || "",
+      "State": center["State"] || "",
+      "Address": center["Address"] || "",
+      "Phone Number": center["Phone Number"] || "",
+      "Hospital Type": center["Hospital Type"] || "",
       date: selectedDate,
       timeOfDay: selectedTime,
       status: "Confirmed"
