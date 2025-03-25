@@ -222,6 +222,8 @@ const Booking = () => {
             <div className="md:w-2/3">
               <h4 className="font-medium text-gray-800 mb-4">Select Appointment Date & Time</h4>
               
+              <p className="text-gray-600 mb-4">Today Morning Afternoon Evening</p>
+              
               <div className="mb-6">
                 <div className="relative flex mb-8">
                   <button 
@@ -256,7 +258,7 @@ const Booking = () => {
                 
                 <div className="space-y-6">
                   <div>
-                    <h5 className="font-medium text-gray-700 mb-3">Morning</h5>
+                    <p className="font-medium text-gray-700 mb-3">Morning</p>
                     <div className="flex flex-wrap gap-2">
                       {morningSlots.map(time => (
                         <button
@@ -272,7 +274,7 @@ const Booking = () => {
                   </div>
                   
                   <div>
-                    <h5 className="font-medium text-gray-700 mb-3">Afternoon</h5>
+                    <p className="font-medium text-gray-700 mb-3">Afternoon</p>
                     <div className="flex flex-wrap gap-2">
                       {afternoonSlots.map(time => (
                         <button
@@ -288,7 +290,7 @@ const Booking = () => {
                   </div>
                   
                   <div>
-                    <h5 className="font-medium text-gray-700 mb-3">Evening</h5>
+                    <p className="font-medium text-gray-700 mb-3">Evening</p>
                     <div className="flex flex-wrap gap-2">
                       {eveningSlots.map(time => (
                         <button
