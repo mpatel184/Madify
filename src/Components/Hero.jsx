@@ -15,21 +15,17 @@ const Hero = () => {
   const [selectedState, setSelectedState] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [stateDropdownOpen, setStateDropdownOpen] = useState(false);
-  const [cityDropdownOpen, setCityDropdownOpen] = useState(false);
+  const [error, setError] = useState(null); 
 
   useEffect(() => {
     const fetchStates = async () => {
       setIsLoading(true);
       try {
         const res = await axios.get("https://meddata-backend.onrender.com/states");
-        const statesWithAlabama = [...new Set([...res.data, "Alabama"])];
-        setStates(statesWithAlabama);
+        setStates(res.data);
       } catch (error) {
         console.error("Error fetching states:", error);
-        setError("Failed to load states.");
-        setStates(["Alabama"]); // Ensure Alabama is always available
+        setError("Failed to load states."); 
       } finally {
         setIsLoading(false);
       }
@@ -38,11 +34,11 @@ const Hero = () => {
     fetchStates();
   }, []);
 
-  const handleStateChange = (state) => {
+  const handleStateChange = (e) => {
+    const state = e.target.value;
     setSelectedState(state);
     setSelectedCity("");
     setCities([]);
-    setStateDropdownOpen(false);
 
     if (state) {
       fetchCities(state);
@@ -53,20 +49,17 @@ const Hero = () => {
     setIsLoading(true);
     try {
       const res = await axios.get(`https://meddata-backend.onrender.com/cities/${state}`);
-      const citiesWithDothan = [...new Set([...res.data, "DOTHAN"])];
-      setCities(citiesWithDothan);
+      setCities(res.data);
     } catch (error) {
       console.error("Error fetching cities:", error);
       setError("Failed to load cities.");
-      setCities(["DOTHAN"]); // Ensure DOTHAN is always available
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleCityChange = (city) => {
-    setSelectedCity(city);
-    setCityDropdownOpen(false);
+  const handleCityChange = (e) => {
+    setSelectedCity(e.target.value);
   };
 
   const handleSearch = () => {
@@ -82,10 +75,40 @@ const Hero = () => {
 
   return (
     <div className="bg-blue-50 w-full overflow-hidden mt-[50px]">
-      {/* Rest of the component remains the same */}
+      <div className="absolute top-0 left-0 right-0 h-screen bg-blue-50 -z-10"></div>
+
       <div className="pt-[120px] px-4 md:px-8">
         <div className="max-w-6xl mx-auto relative">
-          {/* Search section */}
+          <div className="flex flex-col md:flex-row items-center mb-12">
+            <div className="md:w-1/2 mb-6 md:mb-0">
+              <h1 className="text-3xl md:text-4xl font-bold mb-4">
+                <span className="text-gray-900">Find & Book</span>{" "}
+                <span className="text-blue-500">Medical Centers</span>
+              </h1>
+              <p className="text-gray-600 mb-6">
+                Connect instantly with a 24x7 specialist or choose to visit a
+                particular medical center.
+              </p>
+              <button
+                className="bg-blue-500 text-white rounded-md px-6 py-3 font-medium hover:bg-blue-600 transition-colors"
+                onClick={() =>
+                  document
+                    .querySelector("#search-section")
+                    .scrollIntoView({ behavior: "smooth" })
+                }
+              >
+                Find Centers
+              </button>
+            </div>
+            <div className="md:w-1/2 flex justify-center md:justify-end">
+              <img
+                src={doctorImage}
+                alt="Doctor"
+                className="h-[300px] object-contain"
+              />
+            </div>
+          </div>
+
           <div
             id="search-section"
             className="bg-white rounded-lg shadow-md p-6 mb-12"
@@ -93,49 +116,72 @@ const Hero = () => {
             {error && <p className="text-red-500">{error}</p>}
             <div className="flex flex-col md:flex-row gap-3 mb-4">
               <div className="flex-1 relative" id="state">
-                {/* state dropdown code remains the same */}
-                <div 
-                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer"
-                  onClick={() => setStateDropdownOpen(!stateDropdownOpen)}
+                <span className="absolute inset-y-0 left-3 flex items-center">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 text-gray-400"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    />
+                  </svg>
+                </span>
+                <select
+                  value={selectedState}
+                  onChange={handleStateChange}
+                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+                  disabled={isLoading}
                 >
-                  {selectedState || "Select State"}
-                </div>
-                {stateDropdownOpen && (
-                  <ul className="absolute z-10 w-full bg-white border border-gray-200 rounded-md mt-1 max-h-60 overflow-y-auto">
-                    {states.map((state, index) => (
-                      <li 
-                        key={index} 
-                        className="px-4 py-2 hover:bg-blue-50 cursor-pointer"
-                        onClick={() => handleStateChange(state)}
-                      >
-                        {state}
-                      </li>
-                    ))}
-                  </ul>
-                )}
+                  <option value="">Select State</option>
+                  {states.map((state, index) => (
+                    <option key={index} value={state}>
+                      {state}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div className="flex-1 relative" id="city">
-                {/* city dropdown code remains the same */}
-                <div 
-                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer"
-                  onClick={() => selectedState && setCityDropdownOpen(!cityDropdownOpen)}
-                  style={{opacity: !selectedState ? 0.5 : 1}}
+                <span className="absolute inset-y-0 left-3 flex items-center">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 text-gray-400"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                  </svg>
+                </span>
+                <select
+                  value={selectedCity}
+                  onChange={handleCityChange}
+                  disabled={!selectedState || cities.length === 0 || isLoading}
+                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
                 >
-                  {selectedCity || "Select City"}
-                </div>
-                {cityDropdownOpen && (
-                  <ul className="absolute z-10 w-full bg-white border border-gray-200 rounded-md mt-1 max-h-60 overflow-y-auto">
-                    {cities.map((city, index) => (
-                      <li 
-                        key={index} 
-                        className="px-4 py-2 hover:bg-blue-50 cursor-pointer"
-                        onClick={() => handleCityChange(city)}
-                      >
-                        {city}
-                      </li>
-                    ))}
-                  </ul>
-                )}
+                  <option value="">Select City</option>
+                  {cities.map((city, index) => (
+                    <option key={index} value={city}>
+                      {city}
+                    </option>
+                  ))}
+                </select>
               </div>
               <button
                 type="submit"
@@ -178,6 +224,31 @@ const Hero = () => {
                 )}
                 Search
               </button>
+            </div>
+
+            <div className="mt-8">
+              <p className="text-gray-700 mb-4 font-medium">
+                You may be looking for
+              </p>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+                {[
+                  { name: "Doctors", image: doc },
+                  { name: "Labs", image: ae },
+                  { name: "Hospitals", image: Hospital },
+                  { name: "Medical Store", image: Cap },
+                  { name: "Ambulance", image: Ambulance },
+                ].map((item) => (
+                  <div
+                    key={item.name}
+                    className="flex flex-col items-center p-4 rounded-md hover:bg-blue-50 transition-colors cursor-pointer border border-gray-100"
+                  >
+                    <img src={item.image} alt={item.name} className="w-12 h-12 bg-blue-100 rounded-full mb-2" />
+                    <span className="text-blue-500 text-sm font-medium">
+                      {item.name}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
