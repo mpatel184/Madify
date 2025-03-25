@@ -76,6 +76,17 @@ const Hero = () => {
     navigate("/results");
   };
 
+  // Ensure Alabama and DOTHAN are in the lists for testing
+  useEffect(() => {
+    if (states.length > 0 && !states.includes("Alabama")) {
+      setStates(prevStates => [...prevStates, "Alabama"]);
+    }
+    
+    if (selectedState === "Alabama" && cities.length > 0 && !cities.includes("DOTHAN")) {
+      setCities(prevCities => [...prevCities, "DOTHAN"]);
+    }
+  }, [states, cities, selectedState]);
+
   return (
     <div className="bg-blue-50 w-full overflow-hidden mt-[50px]">
       <div className="absolute top-0 left-0 right-0 h-screen bg-blue-50 -z-10"></div>
@@ -180,8 +191,8 @@ const Hero = () => {
                 </span>
                 <div 
                   className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer"
-                  onClick={() => selectedState && cities.length > 0 && setCityDropdownOpen(!cityDropdownOpen)}
-                  style={{opacity: !selectedState || cities.length === 0 ? 0.5 : 1}}
+                  onClick={() => selectedState && setCityDropdownOpen(!cityDropdownOpen)}
+                  style={{opacity: !selectedState ? 0.5 : 1}}
                 >
                   {selectedCity || "Select City"}
                 </div>

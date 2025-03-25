@@ -34,9 +34,9 @@ const MyBookings = () => {
 
   const filteredBookings = searchQuery 
     ? bookings.filter(booking => 
-        booking.center.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        booking.center.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        booking.timeOfDay.toLowerCase().includes(searchQuery.toLowerCase())
+        (booking.center?.name || booking["Hospital Name"] || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (booking.center?.location || booking["City"] || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (booking.timeOfDay || booking.bookingTime || "").toLowerCase().includes(searchQuery.toLowerCase())
       )
     : bookings;
 
@@ -102,8 +102,8 @@ const MyBookings = () => {
           </div>
         ) : (
           <div className="space-y-4">
-            {filteredBookings.map((booking) => (
-              <div key={booking.id} className="bg-white rounded-md shadow-md p-6">
+            {filteredBookings.map((booking, index) => (
+              <div key={index} className="bg-white rounded-md shadow-md p-6">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
                   <div className="flex items-start">
                     <div className="bg-blue-100 rounded-full p-4 w-16 h-16 flex items-center justify-center mr-4">
@@ -121,31 +121,35 @@ const MyBookings = () => {
                       </svg>
                     </div>
                     <div>
-                      <h3 className="text-blue-600 font-semibold text-lg">{booking.center.name}</h3>
+                      <h3 className="font-semibold text-blue-900 text-lg">
+                        {booking.center?.name || booking["Hospital Name"]}
+                      </h3>
                       <p className="text-gray-600 text-sm">
-                        {booking.center.location}
+                        {booking.center?.location || `${booking["City"]}, ${booking["State"]}`}
                       </p>
                     </div>
                   </div>
                   <div className="mt-2 md:mt-0 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
-                    {booking.status}
+                    {booking.status || "Confirmed"}
                   </div>
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                   <div className="bg-gray-50 p-3 rounded-md">
                     <p className="text-gray-500 text-xs mb-1">Date</p>
-                    <p className="text-gray-800 font-medium">{formatDate(booking.date)}</p>
+                    <p className="text-gray-800 font-medium">
+                      {booking.date ? formatDate(booking.date) : formatDate(booking.bookingDate)}
+                    </p>
                   </div>
                   
                   <div className="bg-gray-50 p-3 rounded-md">
                     <p className="text-gray-500 text-xs mb-1">Time</p>
-                    <p className="text-gray-800 font-medium">{booking.timeOfDay}</p>
+                    <p className="text-gray-800 font-medium">{booking.timeOfDay || booking.bookingTime}</p>
                   </div>
                   
                   <div className="bg-gray-50 p-3 rounded-md">
                     <p className="text-gray-500 text-xs mb-1">Booking ID</p>
-                    <p className="text-gray-800 font-medium">#{booking.id.toString().slice(-6)}</p>
+                    <p className="text-gray-800 font-medium">#{(booking.id || index).toString().slice(-6)}</p>
                   </div>
                 </div>
                 
@@ -160,14 +164,14 @@ const MyBookings = () => {
                     className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition-colors"
                     onClick={() => {
                       sessionStorage.setItem('selectedCenter', JSON.stringify({
-                        "Hospital Name": booking.center.name,
-                        "City": booking.center.location.split(', ')[0],
-                        "State": booking.center.location.split(', ')[1],
-                        "Address": booking.center.address,
-                        "Phone Number": booking.center.phone,
-                        "Hospital Type": booking.center.type
+                        "Hospital Name": booking.center?.name || booking["Hospital Name"],
+                        "City": (booking.center?.location || "").split(', ')[0] || booking["City"],
+                        "State": (booking.center?.location || "").split(', ')[1] || booking["State"],
+                        "Address": booking.center?.address || booking["Address"] || "",
+                        "Phone Number": booking.center?.phone || booking["Phone Number"] || "",
+                        "Hospital Type": booking.center?.type || booking["Hospital Type"] || ""
                       }));
-                      navigate(`/book/${booking.id}`);
+                      navigate(`/book/${booking.id || index}`);
                     }}
                   >
                     Change Date
