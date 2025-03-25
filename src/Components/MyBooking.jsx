@@ -121,7 +121,7 @@ const MyBookings = () => {
                     </div>
                     <div>
                       <h3 className="font-semibold text-blue-900 text-lg">
-                        {(booking.center?.name || booking["Hospital Name"] || "").toLowerCase()}
+                        {booking.center?.name || booking["Hospital Name"] || ""}
                       </h3>
                       <p className="text-gray-600 text-sm">
                         {booking.center?.location || `${booking["City"]}, ${booking["State"]}`}

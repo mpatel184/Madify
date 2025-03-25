@@ -140,7 +140,7 @@ const Booking = () => {
     <div className="bg-blue-50 min-h-screen">
       <div className="container mx-auto px-4 py-8 pt-[120px]">
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h2 className="text-2xl font-bold mb-6">Book an Appointment</h2>
+          <h1 className="text-2xl font-bold mb-6">Book an Appointment</h1>
           
           <div className="flex flex-col md:flex-row gap-6">
             <div className="md:w-1/3">
@@ -346,6 +346,7 @@ const Booking = () => {
                 <button 
                   onClick={handleBooking}
                   className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 transition-colors"
+                  data-testid="book-appointment-btn"
                 >
                   Book FREE Center Visit
                 </button>
