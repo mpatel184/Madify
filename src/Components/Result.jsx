@@ -196,9 +196,11 @@ const Results = () => {
             ? "Searching..."
             : error
             ? "Search Error"
-            : `${
-                searchResults.length
-              } medical centers available in ${selectedCity ? `${selectedState}, ${selectedCity}` : selectedState}`}
+            : `${searchResults.length} medical centers available in ${
+                selectedCity
+                  ? `${selectedState}, ${selectedCity.toLowerCase()}`
+                  : selectedState
+              }`}
         </h1>
 
         {isLoading ? (
