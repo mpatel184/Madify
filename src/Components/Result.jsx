@@ -199,7 +199,7 @@ const Results = () => {
             : `${
                 searchResults.length
               } medical centers available in ${selectedState}${
-                selectedCity ? `, ${selectedCity}` : ""
+                selectedCity ? `, ${selectedCity.toUpperCase()}` : ""
               }`}
         </h1>
 
@@ -253,7 +253,7 @@ const Results = () => {
         ) : (
           <div>
             <p className="text-gray-600 mb-4">
-              Book appointments with minimum wait-time & verified doctor details
+              Book appointments with minimum wait-time & verified doctor details Today
             </p>
 
             {searchResults.map((result, index) => (
