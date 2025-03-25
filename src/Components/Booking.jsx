@@ -191,7 +191,7 @@ const Booking = () => {
                     </svg>
                   </div>
                   <div>
-                    <h3 className="text-blue-600 font-semibold text-lg">{center["Hospital Name"]}</h3>
+                    <h3 className="font-semibold text-blue-900 text-lg">{center["Hospital Name"]}</h3>
                     <div className="flex items-center mt-1">
                       <span className="inline-block w-2 h-2 bg-green-500 rounded-full mr-1"></span>
                       <span className="text-green-600 text-sm">Available Today</span>
