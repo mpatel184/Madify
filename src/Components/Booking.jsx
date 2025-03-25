@@ -6,13 +6,13 @@ const Booking = () => {
   const navigate = useNavigate();
   const [center, setCenter] = useState(null);
   const [selectedDate, setSelectedDate] = useState("");
-  const [selectedTime, setSelectedTime] = useState("Morning");
+  const [selectedTime, setSelectedTime] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [availableDates, setAvailableDates] = useState([]);
+  const [activeTab, setActiveTab] = useState(0);
 
   useEffect(() => {
-  
     const storedCenter = sessionStorage.getItem('selectedCenter');
     
     if (!storedCenter) {
@@ -34,7 +34,9 @@ const Booking = () => {
           value: date.toISOString().split('T')[0],
           label: date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }),
           day: date.getDate(),
-          weekday: date.toLocaleDateString('en-US', { weekday: 'short' })
+          weekday: date.toLocaleDateString('en-US', { weekday: 'short' }),
+          month: date.toLocaleDateString('en-US', { month: 'short' }),
+          slots: 10 + Math.floor(Math.random() * 10)
         });
       }
       
@@ -83,6 +85,25 @@ const Booking = () => {
     alert(`Booking confirmed at ${center["Hospital Name"]} for ${selectedTime} on ${selectedDate}`);
     navigate("/my-bookings");
   };
+
+  const handleTabChange = (index) => {
+    setActiveTab(index);
+    if (index >= 0 && index < availableDates.length) {
+      setSelectedDate(availableDates[index].value);
+    }
+  };
+
+  const handleNavigation = (direction) => {
+    if (direction === 'prev' && activeTab > 0) {
+      handleTabChange(activeTab - 1);
+    } else if (direction === 'next' && activeTab < availableDates.length - 3) {
+      handleTabChange(activeTab + 1);
+    }
+  };
+
+  const morningSlots = ["11:30 AM"];
+  const afternoonSlots = ["12:00 PM", "12:30 PM", "01:30 PM", "02:00 PM", "02:30 PM"];
+  const eveningSlots = ["06:00 PM", "06:30 PM", "07:00 PM", "07:30 PM"];
 
   if (isLoading) {
     return (
@@ -202,49 +223,86 @@ const Booking = () => {
               <h4 className="font-medium text-gray-800 mb-4">Select Appointment Date & Time</h4>
               
               <div className="mb-6">
-                <p className="text-gray-600 mb-3">Available Dates (Next 7 Days)</p>
-                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-7 gap-2">
-                  {availableDates.map((date) => (
-                    <div 
-                      key={date.value}
-                      onClick={() => handleDateChange(date.value)}
-                      className={`text-center p-3 rounded-md cursor-pointer border transition-colors
-                        ${selectedDate === date.value 
-                          ? 'border-blue-500 bg-blue-50 text-blue-700' 
-                          : 'border-gray-200 hover:border-blue-300'}`}
-                    >
-                      <div className="text-xs font-medium text-gray-500">
-                        {date.weekday}
+                <div className="relative flex mb-8">
+                  <button 
+                    onClick={() => handleNavigation('prev')}
+                    className="absolute left-0 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center rounded-full hover:bg-gray-100"
+                  >
+                    <span className="text-blue-500 text-2xl">&lsaquo;</span>
+                  </button>
+                  
+                  <div className="flex w-full justify-center space-x-8">
+                    {availableDates.slice(activeTab, activeTab + 3).map((date, index) => (
+                      <div 
+                        key={date.value}
+                        className={`text-center cursor-pointer ${activeTab + index === activeTab ? 'border-t-4 border-green-500' : ''}`}
+                        onClick={() => handleTabChange(activeTab + index)}
+                      >
+                        <p className="text-lg font-medium">
+                          {index === 0 ? 'Today' : index === 1 ? 'Tomorrow' : `${date.weekday}, ${date.day} ${date.month}`}
+                        </p>
+                        <div className="text-sm text-green-600">{date.slots} Slots Available</div>
                       </div>
-                      <div className="text-lg font-bold mt-1">
-                        {date.day}
-                      </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
+                  
+                  <button 
+                    onClick={() => handleNavigation('next')}
+                    className="absolute right-0 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center rounded-full hover:bg-gray-100"
+                  >
+                    <span className="text-blue-500 text-2xl">&rsaquo;</span>
+                  </button>
                 </div>
-              </div>
-              
-              <div className="mb-6">
-                <p className="text-gray-600 mb-3">Available Time Slots</p>
-                <p className="text-gray-600.mb-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  {[
-                    { id: "Morning", label: "Morning", time: "8:00 AM - 12:00 PM" },
-                    { id: "Afternoon", label: "Afternoon", time: "12:00 PM - 4:00 PM" },
-                    { id: "Evening", label: "Evening", time: "4:00 PM - 8:00 PM" }
-                  ].map((slot) => (
-                    <div 
-                      key={slot.id}
-                      onClick={() => handleTimeChange(slot.id)}
-                      className={`text-center p-4 rounded-md cursor-pointer border transition-colors
-                        ${selectedTime === slot.id 
-                          ? 'border-blue-500 bg-blue-50 text-blue-700' 
-                          : 'border-gray-200 hover:border-blue-300'}`}
-                    >
-                      <p className="text-sm font-medium">{slot.label}</p>
-                      <p className="text-xs text-gray-500 mt-1">{slot.time}</p>
+                
+                <div className="space-y-6">
+                  <div>
+                    <h5 className="font-medium text-gray-700 mb-3">Morning</h5>
+                    <div className="flex flex-wrap gap-2">
+                      {morningSlots.map(time => (
+                        <button
+                          key={time}
+                          onClick={() => handleTimeChange(time)}
+                          className={`px-4 py-2 border rounded-md hover:border-blue-500 
+                            ${selectedTime === time ? 'border-blue-500 text-blue-500' : 'border-gray-300'}`}
+                        >
+                          {time}
+                        </button>
+                      ))}
                     </div>
-                  ))}
-                </p>
+                  </div>
+                  
+                  <div>
+                    <h5 className="font-medium text-gray-700 mb-3">Afternoon</h5>
+                    <div className="flex flex-wrap gap-2">
+                      {afternoonSlots.map(time => (
+                        <button
+                          key={time}
+                          onClick={() => handleTimeChange(time)}
+                          className={`px-4 py-2 border rounded-md hover:border-blue-500 
+                            ${selectedTime === time ? 'border-blue-500 text-blue-500' : 'border-gray-300'}`}
+                        >
+                          {time}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h5 className="font-medium text-gray-700 mb-3">Evening</h5>
+                    <div className="flex flex-wrap gap-2">
+                      {eveningSlots.map(time => (
+                        <button
+                          key={time}
+                          onClick={() => handleTimeChange(time)}
+                          className={`px-4 py-2 border rounded-md hover:border-blue-500 
+                            ${selectedTime === time ? 'border-blue-500 text-blue-500' : 'border-gray-300'}`}
+                        >
+                          {time}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
               </div>
               
               <div className="bg-gray-50 p-4 rounded-md mb-6">

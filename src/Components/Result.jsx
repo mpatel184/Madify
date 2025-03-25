@@ -172,7 +172,7 @@ const Results = () => {
 
             <div className="flex items-center justify-between w-full md:w-auto">
               <div className="text-green-600 font-medium mr-4 text-sm">
-                <span className="inline-block w-2 h-2 bg-green-500 rounded-full mr-1"></span>
+                {/* <span className="inline-block w-2 h-2 bg-green-500 rounded-full mr-1"></span> */}
                 Available Today
               </div>
               <button
