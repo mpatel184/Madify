@@ -84,14 +84,6 @@ const Booking = () => {
     const booking = {
       id: Date.now(),
       "Hospital Name": center["Hospital Name"].toLowerCase(),
-      "City": center["City"] || "",
-      "State": center["State"] || "",
-      "Address": center["Address"] || "",
-      "Phone Number": center["Phone Number"] || "",
-      "Hospital Type": center["Hospital Type"] || "",
-      date: formattedDate,
-      timeOfDay: selectedTime,
-      status: "Confirmed"
     };
     
     const existingBookings = JSON.parse(localStorage.getItem('bookings')) || [];
