@@ -8,15 +8,18 @@ const MyBookings = () => {
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
-    setIsLoading(true);
-    try {
-      const storedBookings = JSON.parse(localStorage.getItem('bookings')) || [];
-      setBookings(storedBookings);
-    } catch (error) {
-      console.error("Error loading bookings:", error);
-    } finally {
-      setIsLoading(false);
-    }
+    const loadBookings = () => {
+      try {
+        const storedBookings = JSON.parse(localStorage.getItem('bookings')) || [];
+        setBookings(storedBookings);
+      } catch (error) {
+        console.error("Error loading bookings:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadBookings();
   }, []);
 
   const handleCancelBooking = (id) => {
@@ -53,11 +56,11 @@ const MyBookings = () => {
   }
 
   return (
-    <div className="bg-blue-50 min-h-screen">
-      <div className="container mx-auto px-4 py-8 pt-[120px]">
+    <div className="bg-blue-50 min-h-screen pt-[120px]">
+      <div className="container mx-auto px-4 py-8">
         <div className="bg-white p-4 rounded-lg shadow-md mb-6">
           <div className="flex justify-between items-center mb-4">
-            <h1 className="text-3xl.md:text-4xl.font-bold.mb-4 text-2xl font-bold">My Bookings</h1>
+            <h1 className="text-3xl md:text-4xl font-bold mb-4">My Bookings</h1>
             <div className="relative w-64">
               <input 
                 type="text" 
@@ -133,49 +136,6 @@ const MyBookings = () => {
                   </div>
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                  <div className="bg-gray-50 p-3 rounded-md">
-                    <p className="text-gray-500 text-xs mb-1">Date</p>
-                    <p className="text-gray-800 font-medium">
-                      {booking.date ? formatDate(booking.date) : formatDate(booking.bookingDate)}
-                    </p>
-                  </div>
-                  
-                  <div className="bg-gray-50 p-3 rounded-md">
-                    <p className="text-gray-500 text-xs mb-1">Time</p>
-                    <p className="text-gray-800 font-medium">{booking.timeOfDay || booking.bookingTime}</p>
-                  </div>
-                  
-                  <div className="bg-gray-50 p-3 rounded-md">
-                    <p className="text-gray-500 text-xs mb-1">Booking ID</p>
-                    <p className="text-gray-800 font-medium">#{(booking.id || index).toString().slice(-6)}</p>
-                  </div>
-                </div>
-                
-                <div className="border-t border-gray-200 mt-4 pt-4 flex justify-end">
-                  <button 
-                    className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded mr-2 transition-colors"
-                    onClick={() => handleCancelBooking(booking.id)}
-                  >
-                    Cancel Booking
-                  </button> 
-                  <button 
-                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition-colors"
-                    onClick={() => {
-                      sessionStorage.setItem('selectedCenter', JSON.stringify({
-                        "Hospital Name": booking.center?.name || booking["Hospital Name"],
-                        "City": (booking.center?.location || "").split(', ')[0] || booking["City"],
-                        "State": (booking.center?.location || "").split(', ')[1] || booking["State"],
-                        "Address": booking.center?.address || booking["Address"] || "",
-                        "Phone Number": booking.center?.phone || booking["Phone Number"] || "",
-                        "Hospital Type": booking.center?.type || booking["Hospital Type"] || ""
-                      }));
-                      navigate(`/book/${booking.id || index}`);
-                    }}
-                  >
-                    Change Date
-                  </button>
-                </div>
               </div>
             ))}
           </div>
