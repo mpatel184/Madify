@@ -15,7 +15,9 @@ const Hero = () => {
   const [selectedState, setSelectedState] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null); 
+  const [error, setError] = useState(null);
+  const [showStateDropdown, setShowStateDropdown] = useState(false);
+  const [showCityDropdown, setShowCityDropdown] = useState(false);
 
   useEffect(() => {
     const fetchStates = async () => {
@@ -25,7 +27,7 @@ const Hero = () => {
         setStates(res.data);
       } catch (error) {
         console.error("Error fetching states:", error);
-        setError("Failed to load states."); 
+        setError("Failed to load states.");
       } finally {
         setIsLoading(false);
       }
@@ -34,11 +36,11 @@ const Hero = () => {
     fetchStates();
   }, []);
 
-  const handleStateChange = (e) => {
-    const state = e.target.value;
+  const handleStateChange = (state) => {
     setSelectedState(state);
     setSelectedCity("");
     setCities([]);
+    setShowStateDropdown(false);
 
     if (state) {
       fetchCities(state);
@@ -58,8 +60,9 @@ const Hero = () => {
     }
   };
 
-  const handleCityChange = (e) => {
-    setSelectedCity(e.target.value);
+  const handleCityChange = (city) => {
+    setSelectedCity(city);
+    setShowCityDropdown(false);
   };
 
   const handleSearch = () => {
@@ -132,19 +135,29 @@ const Hero = () => {
                     />
                   </svg>
                 </span>
-                <select
-                  value={selectedState}
-                  onChange={handleStateChange}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
-                  disabled={isLoading}
-                >
-                  <option value="">Select State</option>
-                  {states.map((state, index) => (
-                    <option key={index} value={state}>
-                      {state}
-                    </option>
-                  ))}
-                </select>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={selectedState}
+                    onClick={() => setShowStateDropdown(!showStateDropdown)}
+                    placeholder="Select State"
+                    className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    readOnly
+                  />
+                  {showStateDropdown && (
+                    <ul className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-auto">
+                      {states.map((state, index) => (
+                        <li
+                          key={index}
+                          onClick={() => handleStateChange(state)}
+                          className="px-4 py-2 hover:bg-blue-50 cursor-pointer"
+                        >
+                          {state}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
               </div>
               <div className="flex-1 relative" id="city">
                 <span className="absolute inset-y-0 left-3 flex items-center">
@@ -169,19 +182,30 @@ const Hero = () => {
                     />
                   </svg>
                 </span>
-                <select
-                  value={selectedCity}
-                  onChange={handleCityChange}
-                  disabled={!selectedState || cities.length === 0 || isLoading}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
-                >
-                  <option value="">Select City</option>
-                  {cities.map((city, index) => (
-                    <option key={index} value={city}>
-                      {city}
-                    </option>
-                  ))}
-                </select>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={selectedCity}
+                    onClick={() => setShowCityDropdown(!showCityDropdown)}
+                    placeholder="Select City"
+                    className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    readOnly
+                    disabled={!selectedState}
+                  />
+                  {showCityDropdown && selectedState && (
+                    <ul className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-auto">
+                      {cities.map((city, index) => (
+                        <li
+                          key={index}
+                          onClick={() => handleCityChange(city)}
+                          className="px-4 py-2 hover:bg-blue-50 cursor-pointer"
+                        >
+                          {city}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
               </div>
               <button
                 type="submit"
