@@ -198,9 +198,7 @@ const Results = () => {
             ? "Search Error"
             : `${
                 searchResults.length
-              } medical centers available in ${selectedState}${
-                selectedCity ? `, ${selectedCity.toUpperCase()}` : ""
-              }`}
+              } medical centers available in ${selectedCity ? `${selectedState}, ${selectedCity}` : selectedState}`}
         </h1>
 
         {isLoading ? (
