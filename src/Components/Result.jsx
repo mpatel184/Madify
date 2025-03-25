@@ -30,7 +30,6 @@ const Results = () => {
       const url = `https://meddata-backend.onrender.com/data?state=${encodeURIComponent(
         state
       )}${city ? `&city=${encodeURIComponent(city)}` : ""}`;
-
       const response = await axios.get(url);
       const data = response.data;
 

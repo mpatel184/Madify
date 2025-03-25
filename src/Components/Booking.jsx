@@ -11,6 +11,7 @@ const Booking = () => {
   const [error, setError] = useState(null);
   const [availableDates, setAvailableDates] = useState([]);
   const [activeTab, setActiveTab] = useState(0);
+  const [visibleDates, setVisibleDates] = useState([]);
 
   useEffect(() => {
     const storedCenter = sessionStorage.getItem('selectedCenter');
@@ -42,6 +43,7 @@ const Booking = () => {
       
       setAvailableDates(dates);
       setSelectedDate(dates[0].value);
+      updateVisibleDates(0, dates);
       
     } catch (err) {
       setError("Failed to load center information.");
@@ -50,8 +52,15 @@ const Booking = () => {
     }
   }, [id]);
 
-  const handleDateChange = (date) => {
-    setSelectedDate(date);
+  const updateVisibleDates = (startIndex, dates = availableDates) => {
+    setVisibleDates(dates.slice(startIndex, startIndex + 3));
+  };
+
+  const handleDateChange = (index) => {
+    setActiveTab(index);
+    if (index >= 0 && index < availableDates.length) {
+      setSelectedDate(availableDates[index].value);
+    }
   };
 
   const handleTimeChange = (time) => {
@@ -64,44 +73,50 @@ const Booking = () => {
       return;
     }
     
+    const selectedDateObj = new Date(selectedDate);
+    const formattedDate = selectedDateObj.toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+    
     const booking = {
       id: Date.now(),
-      "Hospital Name": "southeast alabama medical center",
+      "Hospital Name": center["Hospital Name"],
       "City": center["City"] || "",
       "State": center["State"] || "",
       "Address": center["Address"] || "",
       "Phone Number": center["Phone Number"] || "",
       "Hospital Type": center["Hospital Type"] || "",
-      date: selectedDate,
+      date: formattedDate,
       timeOfDay: selectedTime,
       status: "Confirmed"
     };
     
     const existingBookings = JSON.parse(localStorage.getItem('bookings')) || [];
+    
     localStorage.setItem('bookings', JSON.stringify([...existingBookings, booking]));
     
-    alert(`Booking confirmed at ${center["Hospital Name"]} for ${selectedTime} on ${selectedDate}`);
+    alert(`Booking confirmed at ${center["Hospital Name"]} for ${selectedTime} on ${formattedDate}`);
     navigate("/my-bookings");
-  };
-
-  const handleTabChange = (index) => {
-    setActiveTab(index);
-    if (index >= 0 && index < availableDates.length) {
-      setSelectedDate(availableDates[index].value);
-    }
   };
 
   const handleNavigation = (direction) => {
     if (direction === 'prev' && activeTab > 0) {
-      handleTabChange(activeTab - 1);
+      const newIndex = Math.max(0, activeTab - 3);
+      setActiveTab(newIndex);
+      updateVisibleDates(newIndex);
     } else if (direction === 'next' && activeTab < availableDates.length - 3) {
-      handleTabChange(activeTab + 1);
+      const newIndex = Math.min(availableDates.length - 3, activeTab + 3);
+      setActiveTab(newIndex);
+      updateVisibleDates(newIndex);
     }
   };
 
-  const morningSlots = ["11:30 AM"];
-  const afternoonSlots = ["12:00 PM", "12:30 PM", "01:30 PM", "02:00 PM", "02:30 PM"];
-  const eveningSlots = ["06:00 PM", "06:30 PM", "07:00 PM", "07:30 PM"];
+  const morningSlots = ["09:00 AM", "09:30 AM", "10:00 AM", "10:30 AM", "11:00 AM", "11:30 AM"];
+  const afternoonSlots = ["12:00 PM", "12:30 PM", "01:00 PM", "01:30 PM", "02:00 PM", "02:30 PM"];
+  const eveningSlots = ["05:00 PM", "05:30 PM", "06:00 PM", "06:30 PM", "07:00 PM", "07:30 PM"];
 
   if (isLoading) {
     return (
@@ -133,6 +148,23 @@ const Booking = () => {
       </div>
     );
   }
+
+  const getDateLabel = (date, index) => {
+    const today = new Date();
+    const dateObj = new Date(date.value);
+    
+    if (dateObj.getDate() === today.getDate() && 
+        dateObj.getMonth() === today.getMonth() && 
+        dateObj.getFullYear() === today.getFullYear()) {
+      return 'Today';
+    } else if (dateObj.getDate() === today.getDate() + 1 && 
+               dateObj.getMonth() === today.getMonth() && 
+               dateObj.getFullYear() === today.getFullYear()) {
+      return 'Tomorrow';
+    } else {
+      return `${date.weekday}, ${date.day} ${date.month}`;
+    }
+  };
 
   return (
     <div className="bg-blue-50 min-h-screen">
@@ -220,26 +252,28 @@ const Booking = () => {
             <div className="md:w-2/3">
               <h4 className="font-medium text-gray-800 mb-4">Select Appointment Date & Time</h4>
               
-              <p className="text-gray-600 mb-4">Today Morning Afternoon Evening</p>
-              
               <div className="mb-6">
                 <div className="relative flex mb-8">
                   <button 
                     onClick={() => handleNavigation('prev')}
-                    className="absolute left-0 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center rounded-full hover:bg-gray-100"
+                    className={`absolute left-0 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center rounded-full hover:bg-gray-100 ${activeTab === 0 ? 'text-gray-300' : 'text-blue-500'}`}
+                    disabled={activeTab === 0}
                   >
-                    <span className="text-blue-500 text-2xl">&lsaquo;</span>
+                    <span className="text-2xl">&lsaquo;</span>
                   </button>
                   
                   <div className="flex w-full justify-center space-x-8">
                     {availableDates.slice(activeTab, activeTab + 3).map((date, index) => (
                       <div 
                         key={date.value}
-                        className={`text-center cursor-pointer ${activeTab + index === activeTab ? 'border-t-4 border-green-500' : ''}`}
-                        onClick={() => handleTabChange(activeTab + index)}
+                        className={`text-center cursor-pointer transition-all ${selectedDate === date.value ? 'border-t-4 border-green-500 pt-1' : 'pt-[5px]'}`}
+                        onClick={() => {
+                          setSelectedDate(date.value);
+                          handleDateChange(activeTab + index);
+                        }}
                       >
                         <p className="text-lg font-medium">
-                          {index === 0 ? 'Today' : index === 1 ? 'Tomorrow' : `${date.weekday}, ${date.day} ${date.month}`}
+                          {getDateLabel(date, activeTab + index)}
                         </p>
                         <div className="text-sm text-green-600">{date.slots} Slots Available</div>
                       </div>
@@ -248,9 +282,10 @@ const Booking = () => {
                   
                   <button 
                     onClick={() => handleNavigation('next')}
-                    className="absolute right-0 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center rounded-full hover:bg-gray-100"
+                    className={`absolute right-0 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center rounded-full hover:bg-gray-100 ${activeTab >= availableDates.length - 3 ? 'text-gray-300' : 'text-blue-500'}`}
+                    disabled={activeTab >= availableDates.length - 3}
                   >
-                    <span className="text-blue-500 text-2xl">&rsaquo;</span>
+                    <span className="text-2xl">&rsaquo;</span>
                   </button>
                 </div>
                 
@@ -262,8 +297,10 @@ const Booking = () => {
                         <button
                           key={time}
                           onClick={() => handleTimeChange(time)}
-                          className={`px-4 py-2 border rounded-md hover:border-blue-500 
-                            ${selectedTime === time ? 'border-blue-500 text-blue-500' : 'border-gray-300'}`}
+                          className={`px-4 py-2 border rounded-md transition-colors
+                            ${selectedTime === time 
+                              ? 'border-blue-500 bg-blue-50 text-blue-500' 
+                              : 'border-gray-300 hover:border-blue-300'}`}
                         >
                           {time}
                         </button>
@@ -278,8 +315,10 @@ const Booking = () => {
                         <button
                           key={time}
                           onClick={() => handleTimeChange(time)}
-                          className={`px-4 py-2 border rounded-md hover:border-blue-500 
-                            ${selectedTime === time ? 'border-blue-500 text-blue-500' : 'border-gray-300'}`}
+                          className={`px-4 py-2 border rounded-md transition-colors
+                            ${selectedTime === time 
+                              ? 'border-blue-500 bg-blue-50 text-blue-500' 
+                              : 'border-gray-300 hover:border-blue-300'}`}
                         >
                           {time}
                         </button>
@@ -294,8 +333,10 @@ const Booking = () => {
                         <button
                           key={time}
                           onClick={() => handleTimeChange(time)}
-                          className={`px-4 py-2 border rounded-md hover:border-blue-500 
-                            ${selectedTime === time ? 'border-blue-500 text-blue-500' : 'border-gray-300'}`}
+                          className={`px-4 py-2 border rounded-md transition-colors
+                            ${selectedTime === time 
+                              ? 'border-blue-500 bg-blue-50 text-blue-500' 
+                              : 'border-gray-300 hover:border-blue-300'}`}
                         >
                           {time}
                         </button>
@@ -325,7 +366,7 @@ const Booking = () => {
                   </div>
                   <div>
                     <span className="text-gray-500">Time:</span>
-                    <span className="text-gray-800 ml-2">{selectedTime}</span>
+                    <span className="text-gray-800 ml-2">{selectedTime || 'Not selected'}</span>
                   </div>
                   <div>
                     <span className="text-gray-500">Fee:</span>
@@ -343,7 +384,12 @@ const Booking = () => {
                 </button>
                 <button 
                   onClick={handleBooking}
-                  className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 transition-colors"
+                  disabled={!selectedDate || !selectedTime}
+                  className={`px-6 py-2 rounded transition-colors ${
+                    !selectedDate || !selectedTime 
+                    ? 'bg-blue-300 text-white cursor-not-allowed' 
+                    : 'bg-blue-500 text-white hover:bg-blue-600'
+                  }`}
                   data-testid="book-appointment-btn"
                 >
                   Book FREE Center Visit
