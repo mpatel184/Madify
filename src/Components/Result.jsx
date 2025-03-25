@@ -191,7 +191,7 @@ const Results = () => {
   return (
     <div className="bg-blue-50 min-h-screen">
       <div className="container mx-auto px-4 py-8 pt-[120px]">
-        <h2 className="text-xl font-semibold mb-4">
+        <h1 className="text-xl font-semibold mb-4">
           {isLoading
             ? "Searching..."
             : error
@@ -201,7 +201,7 @@ const Results = () => {
               } medical centers available in ${selectedState}${
                 selectedCity ? `, ${selectedCity}` : ""
               }`}
-        </h2>
+        </h1>
 
         {isLoading ? (
           <div className="flex justify-center items-center py-16">

@@ -122,7 +122,6 @@ const Booking = () => {
           <h2 className="text-2xl font-bold mb-6">Book an Appointment</h2>
           
           <div className="flex flex-col md:flex-row gap-6">
-           
             <div className="md:w-1/3">
               <div className="bg-blue-50 rounded-lg p-6">
                 <div className="flex items-start mb-4">
@@ -227,7 +226,7 @@ const Booking = () => {
               
               <div className="mb-6">
                 <p className="text-gray-600 mb-3">Available Time Slots</p>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <p className="text-gray-600.mb-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
                   {[
                     { id: "Morning", label: "Morning", time: "8:00 AM - 12:00 PM" },
                     { id: "Afternoon", label: "Afternoon", time: "12:00 PM - 4:00 PM" },
@@ -245,7 +244,7 @@ const Booking = () => {
                       <p className="text-xs text-gray-500 mt-1">{slot.time}</p>
                     </div>
                   ))}
-                </div>
+                </p>
               </div>
               
               <div className="bg-gray-50 p-4 rounded-md mb-6">

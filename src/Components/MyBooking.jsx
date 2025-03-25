@@ -8,7 +8,6 @@ const MyBookings = () => {
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
-    // Load bookings from localStorage
     setIsLoading(true);
     try {
       const storedBookings = JSON.parse(localStorage.getItem('bookings')) || [];
@@ -58,7 +57,7 @@ const MyBookings = () => {
       <div className="container mx-auto px-4 py-8 pt-[120px]">
         <div className="bg-white p-4 rounded-lg shadow-md mb-6">
           <div className="flex justify-between items-center mb-4">
-            <h1 className="text-2xl font-bold">My Bookings</h1>
+            <h1 className="text-3xl.md:text-4xl.font-bold.mb-4 text-2xl font-bold">My Bookings</h1>
             <div className="relative w-64">
               <input 
                 type="text" 
@@ -159,7 +158,7 @@ const MyBookings = () => {
                     onClick={() => handleCancelBooking(booking.id)}
                   >
                     Cancel Booking
-                  </button>
+                  </button> 
                   <button 
                     className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition-colors"
                     onClick={() => {
