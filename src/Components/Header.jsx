@@ -32,12 +32,15 @@ export default function Header() {
               <a key={item} href="#" className="text-gray-700 hover:text-blue-500">{item}</a>
             ))}
           </div>
+          <h1 className='text-3xl.md:text-4xl.font-bold.mb-4'>
           <button 
             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
             onClick={goToMyBookings}
           >
             My Bookings
           </button>
+          </h1>
+
         </div>
       </nav>
     </header>

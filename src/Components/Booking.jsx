@@ -83,7 +83,7 @@ const Booking = () => {
     
     const booking = {
       id: Date.now(),
-      "Hospital Name": center["Hospital Name"],
+      "Hospital Name": center["Hospital Name"].toLowerCase(),
       "City": center["City"] || "",
       "State": center["State"] || "",
       "Address": center["Address"] || "",
