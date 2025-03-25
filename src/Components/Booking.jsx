@@ -69,38 +69,30 @@ const Booking = () => {
 
   const handleBooking = () => {
     if (!selectedDate || !selectedTime) {
-      alert("Please select both date and time for your appointment");
+      alert("Please select both date and time for your appointment.");
       return;
     }
-    
-    const selectedDateObj = new Date(selectedDate);
-    const formattedDate = selectedDateObj.toLocaleDateString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-    
+  
     const booking = {
       id: Date.now(),
-      "Hospital Name": center["Hospital Name"].toLowerCase(),
+      "Hospital Name": center["Hospital Name"],
       "City": center["City"] || "",
       "State": center["State"] || "",
-      "Address": center["Address"] || "",
-      "Phone Number": center["Phone Number"] || "",
       "Hospital Type": center["Hospital Type"] || "",
-      date: formattedDate,
+      "Phone Number": center["Phone Number"] || "",
+      "Address": center["Address"] || "",
+      date: new Date(selectedDate).toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" }),
       timeOfDay: selectedTime,
       status: "Confirmed"
     };
-    
-    const existingBookings = JSON.parse(localStorage.getItem('bookings')) || [];
-    
-    localStorage.setItem('bookings', JSON.stringify([...existingBookings, booking]));
-    
-    alert(`Booking confirmed at ${center["Hospital Name"]} for ${selectedTime} on ${formattedDate}`);
-    navigate("/my-bookings");
+  
+    const existingBookings = JSON.parse(localStorage.getItem("bookings")) || [];
+    localStorage.setItem("bookings", JSON.stringify([...existingBookings, booking]));
+  
+    alert(`Booking confirmed at ${center["Hospital Name"]} for ${selectedTime} on ${booking.date}`);
+    setTimeout(() => navigate("/my-bookings"), 500);
   };
+  
 
   const handleNavigation = (direction) => {
     if (direction === 'prev' && activeTab > 0) {

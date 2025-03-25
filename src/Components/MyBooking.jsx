@@ -216,25 +216,25 @@ const MyBookings = () => {
                         JSON.stringify({
                           "Hospital Name":
                             booking.center?.name ||
-                            booking["Hospital Name"]
-                          // City:
-                          //   (booking.center?.location || "").split(", ")[0] ||
-                          //   booking["City"] ||
-                          //   "",
-                          // State:
-                          //   (booking.center?.location || "").split(", ")[1] ||
-                          //   booking["State"] ||
-                          //   "",
-                          // Address:
-                          //   booking.center?.address || booking["Address"] || "",
-                          // "Phone Number":
-                          //   booking.center?.phone ||
-                          //   booking["Phone Number"] ||
-                          //   "",
-                          // "Hospital Type":
-                          //   booking.center?.type ||
-                          //   booking["Hospital Type"] ||
-                          //   "",
+                            booking["Hospital Name"],
+                          City:
+                            (booking.center?.location || "").split(", ")[0] ||
+                            booking["City"] ||
+                            "",
+                          State:
+                            (booking.center?.location || "").split(", ")[1] ||
+                            booking["State"] ||
+                            "",
+                          Address:
+                            booking.center?.address || booking["Address"] || "",
+                          "Phone Number":
+                            booking.center?.phone ||
+                            booking["Phone Number"] ||
+                            "",
+                          "Hospital Type":
+                            booking.center?.type ||
+                            booking["Hospital Type"] ||
+                            "",
                         })
                       );
                       navigate(`/book/${booking.id || index}`);
