@@ -10,10 +10,11 @@ const MyBookings = () => {
   useEffect(() => {
     setIsLoading(true);
     try {
-      const storedBookings = JSON.parse(localStorage.getItem("bookings")) || [];
-      setBookings(storedBookings);
+      const storedBookings = localStorage.getItem("bookings");
+      setBookings(storedBookings ? JSON.parse(storedBookings) : []);
     } catch (error) {
       console.error("Error loading bookings:", error);
+      setBookings([]);
     } finally {
       setIsLoading(false);
     }
@@ -159,20 +160,11 @@ const MyBookings = () => {
                       </svg>
                     </div>
                     <div>
-                      {bookings.length > 0 ? (
-                        bookings.map((booking, index) => (
-                          <h3
-                            key={index}
-                            className="font-semibold text-blue-900 text-lg"
-                          >
-                            {booking.center?.name ||
-                              booking["Hospital Name"]?.toLowerCase() ||
-                              "Unknown Hospital"}
-                          </h3>
-                        ))
-                      ) : (
-                        <p>No bookings found.</p>
-                      )}
+                      <h3 className="font-semibold text-blue-900 text-lg">
+                        {booking.center?.name ||
+                          booking["Hospital Name"].toLowerCase() ||
+                          "Unknown Hospital"}
+                      </h3>
                       <p className="text-gray-600 text-sm">
                         {booking.center?.location ||
                           `${booking["City"]}, ${booking["State"]}`}
@@ -224,26 +216,25 @@ const MyBookings = () => {
                         JSON.stringify({
                           "Hospital Name":
                             booking.center?.name ||
-                            booking["Hospital Name"] ||
-                            "southeast alabama medical center",
-                          City:
-                            (booking.center?.location || "").split(", ")[0] ||
-                            booking["City"] ||
-                            "",
-                          State:
-                            (booking.center?.location || "").split(", ")[1] ||
-                            booking["State"] ||
-                            "",
-                          Address:
-                            booking.center?.address || booking["Address"] || "",
-                          "Phone Number":
-                            booking.center?.phone ||
-                            booking["Phone Number"] ||
-                            "",
-                          "Hospital Type":
-                            booking.center?.type ||
-                            booking["Hospital Type"] ||
-                            "",
+                            booking["Hospital Name"]
+                          // City:
+                          //   (booking.center?.location || "").split(", ")[0] ||
+                          //   booking["City"] ||
+                          //   "",
+                          // State:
+                          //   (booking.center?.location || "").split(", ")[1] ||
+                          //   booking["State"] ||
+                          //   "",
+                          // Address:
+                          //   booking.center?.address || booking["Address"] || "",
+                          // "Phone Number":
+                          //   booking.center?.phone ||
+                          //   booking["Phone Number"] ||
+                          //   "",
+                          // "Hospital Type":
+                          //   booking.center?.type ||
+                          //   booking["Hospital Type"] ||
+                          //   "",
                         })
                       );
                       navigate(`/book/${booking.id || index}`);
