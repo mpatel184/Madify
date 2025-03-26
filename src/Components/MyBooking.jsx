@@ -162,7 +162,7 @@ const MyBookings = () => {
                     <div>
                       <h3 className="font-semibold text-blue-900 text-lg">
                         {booking.center?.name ||
-                          booking["Hospital Name"].toLowerCase() ||
+                          booking["Hospital Name"]. ||
                           "Unknown Hospital"}
                       </h3>
                       <p className="text-gray-600 text-sm">
