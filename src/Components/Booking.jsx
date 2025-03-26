@@ -74,25 +74,21 @@ const Booking = () => {
     }
   
     const booking = {
-      id: Date.now(),
-      "Hospital Name": center["Hospital Name"],
+      "Hospital Name": center["Hospital Name"].toLowerCase(),
       "City": center["City"] || "",
       "State": center["State"] || "",
       "Hospital Type": center["Hospital Type"] || "",
-      "Phone Number": center["Phone Number"] || "",
-      "Address": center["Address"] || "",
-      date: new Date(selectedDate).toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" }),
-      timeOfDay: selectedTime,
-      status: "Confirmed"
+      "Hospital overall rating": center["Hospital overall rating"] || "",
+      bookingDate: selectedDate,
+      bookingTime: selectedTime,
     };
   
     const existingBookings = JSON.parse(localStorage.getItem("bookings")) || [];
     localStorage.setItem("bookings", JSON.stringify([...existingBookings, booking]));
   
-    alert(`Booking confirmed at ${center["Hospital Name"]} for ${selectedTime} on ${booking.date}`);
+    alert(`Booking confirmed at ${center["Hospital Name"]} for ${selectedTime} on ${new Date(selectedDate).toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}`);
     setTimeout(() => navigate("/my-bookings"), 500);
   };
-  
 
   const handleNavigation = (direction) => {
     if (direction === 'prev' && activeTab > 0) {
