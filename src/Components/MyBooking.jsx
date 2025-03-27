@@ -158,7 +158,8 @@ const MyBookings = () => {
                           clipRule="evenodd"
                         />
                       </svg>
-                    </div>
+                    </div>  
+              
                     <div>
                       <h3 className="font-semibold text-blue-900 text-lg">
                         {booking.center?.name ||
